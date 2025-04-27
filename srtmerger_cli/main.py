@@ -35,7 +35,7 @@ class Merger():
     file which will display subtitles from each merged file.
     """
 
-    def __init__(self, output_path=".", output_name='subtitle_name.srt', output_encoding='utf-8'):
+    def __init__(self, output_path: str = ".", output_name: str = "subtitle_name.srt", output_encoding="utf-8"):
         self.timestamps = []
         self.subtitles = []
         self.lines = []
@@ -123,6 +123,7 @@ class Merger():
         except Exception as e:
             logger.error('Problem in "{}" to encoding by {}. \nError: {}', repr(text), codec, e)
 
+    def add(self, subtitle_address: PathLike, codec: str | None = None, color=Colors.WHITE, top=False):
         if not codec:
             codec = detect_encoding(subtitle_address)
             logger.debug("Detected codec = {}", codec)

@@ -1,0 +1,1 @@
+from .merge_subs import merge_subs as main

@@ -55,7 +55,7 @@ class Merger():
         if encoding in ['UTF32LE']:
             return codecs.BOM_UTF32_LE + content
         if encoding in ['UTF64BE']:
-            return codecs.BOM_UTF64_BE + content
+            return codecs.BOM64_BE + content
         if encoding in ['UTF16BE']:
             return codecs.BOM_UTF32_BE + content
         if encoding in ['UTF32BE']:

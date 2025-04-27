@@ -5,6 +5,12 @@ import datetime
 import codecs
 import re
 import chardet
+from loguru import logger
+
+logger.remove()
+logger.add(sys.stdout, level="DEBUG", enqueue=True)
+logger.add(sys.stderr, level="WARNING", format="{time} {level} {message}", enqueue=True)
+
 
 class Colors(StrEnum):
     RED = "#FF003B"
@@ -115,9 +121,7 @@ class Merger():
         try:
             return bytes(text, encoding=codec)
         except Exception as e:
-            print('Problem in "%s" to encoing by %s. \nError: %s' %
-                  (repr(text), codec, e))
-            return b'An error has been occured in encoing by specifed `output_encoding`'
+            logger.error('Problem in "{}" to encoding by {}. \nError: {}', repr(text), codec, e)
 
         if not codec:
             codec = detect_encoding(subtitle_address)
@@ -127,10 +131,13 @@ class Merger():
                 data = file.buffer.read().decode(codec)
             except UnicodeDecodeError as err:
                 if codec == "ascii":
+                    logger.warning("Chardet incorrectly guessed ascii encoding for sub file.\n{}", err)
                     file.buffer.seek(0) # Move buffer pointer again to the beginning
                     data = file.buffer.read().decode("utf-8")
                 else:
+                    logger.error("Error while decoding:\n{}", err)
                     raise
+            logger.debug("Some decoded data = {}", data[:50])
             self._split_dialogs(dialogs, subtitle, color, top)
             self.subtitles.append(subtitle)
 
@@ -168,7 +175,7 @@ class Merger():
             self.lines[-1] = self.lines[-1][:-1] + b''
         with open(self.get_output_path(), 'w', encoding=self.output_encoding) as output:
             output.buffer.writelines(self.lines)
-            print("'%s'" % (output.name), 'created successfully.')
+            logger.success('"{}" created successfully.', output.name)
 
 
 # How to use?

@@ -4,6 +4,7 @@
 import datetime
 import codecs
 import re
+import chardet
 
 class Colors(StrEnum):
     RED = "#FF003B"
@@ -13,7 +14,12 @@ class Colors(StrEnum):
     YELLOW = "#FFEB00"
 
 
-TIME_PATTERN = r'\d{1,2}:\d{1,2}:\d{1,2},\d{1,5} --> \d{1,2}:\d{1,2}:\d{1,2},\d{1,5}\r\n'
+
+def detect_encoding(file_path: PathLike):
+    with open(file_path, "rb") as f:
+        raw_data = f.read(10000)  # Read a chunk of the file
+        result = chardet.detect(raw_data)
+        return result["encoding"]
 
 
 class Merger():
@@ -113,18 +119,18 @@ class Merger():
                   (repr(text), codec, e))
             return b'An error has been occured in encoing by specifed `output_encoding`'
 
-    def add(self, subtitle_address, codec="utf-8", color=WHITE, top=False):
-        subtitle = {
-            'address': subtitle_address,
-            'codec': codec,
-            'color': color,
-            'dialogs': {}
-        }
-        with open(subtitle_address, 'r') as file:
-            data = file.buffer.read().decode(codec)
-            dialogs = re.split('\r\n\r|\n\n', data)
-            subtitle['data'] = data
-            subtitle['raw_dialogs'] = dialogs
+        if not codec:
+            codec = detect_encoding(subtitle_address)
+            logger.debug("Detected codec = {}", codec)
+        with open(subtitle_address) as file:
+            try:
+                data = file.buffer.read().decode(codec)
+            except UnicodeDecodeError as err:
+                if codec == "ascii":
+                    file.buffer.seek(0) # Move buffer pointer again to the beginning
+                    data = file.buffer.read().decode("utf-8")
+                else:
+                    raise
             self._split_dialogs(dialogs, subtitle, color, top)
             self.subtitles.append(subtitle)
 

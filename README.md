@@ -8,3 +8,20 @@ SRT Merger allows you to merge subtitle files, no matter what language are the s
     m.add('fa.srt', color="yellow", codec="windows-1256")
     m.add('en.srt')
     m.merge()
+
+
+# How to install cli-script if you have `uv`:
+
+1) Clone the repo 
+
+2) From repo folder execute this command
+
+```bash
+uv tool install .
+```
+
+3) After that you can use scipt
+
+```bash
+merge-subs --help
+```

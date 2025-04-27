@@ -5,11 +5,13 @@ import datetime
 import codecs
 import re
 
-RED = '#FF003B'
-BLUE = '#00ADFF'
-GREEN = '#B4FF00'
-WHITE = '#FFFFFF'
-YELLOW = '#FFEB00'
+class Colors(StrEnum):
+    RED = "#FF003B"
+    BLUE = "#00ADFF"
+    GREEN = "#B4FF00"
+    WHITE = "#FFFFFF"
+    YELLOW = "#FFEB00"
+
 
 TIME_PATTERN = r'\d{1,2}:\d{1,2}:\d{1,2},\d{1,5} --> \d{1,2}:\d{1,2}:\d{1,2},\d{1,5}\r\n'
 
